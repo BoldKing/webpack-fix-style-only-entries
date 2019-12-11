@@ -30,7 +30,9 @@ class WebpackFixStyleOnlyEntriesPlugin {
 
     compiler.hooks.compilation.tap(NAME, compilation => {
       compilation.hooks.chunkAsset.tap(NAME, (chunk, file) => {
-        if (!file.endsWith(".js") && !file.endsWith(".mjs")) return;
+        const filename = file.split('?').shift()
+
+        if (!filename.endsWith(".js") && !filename.endsWith(".mjs")) return;
         if (!chunk.hasEntryModule()) return;
 
         const rawResources = collectEntryResources(chunk.entryModule);
@@ -49,6 +51,7 @@ class WebpackFixStyleOnlyEntriesPlugin {
             );
           }
           chunk.files = chunk.files.filter(f => f != file);
+
           delete compilation.assets[file];
         }
       });
